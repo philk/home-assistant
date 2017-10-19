@@ -15,7 +15,7 @@ CONF_ALIASES = 'aliases'
 
 DEFAULT_EXPOSE_BY_DEFAULT = True
 DEFAULT_EXPOSED_DOMAINS = [
-    'switch', 'light', 'group', 'media_player', 'fan', 'cover'
+    'switch', 'light', 'scene', 'group', 'media_player', 'fan', 'cover'
 ]
 
 PREFIX_TRAITS = 'action.devices.traits.'
