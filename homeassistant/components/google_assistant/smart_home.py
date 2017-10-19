@@ -31,33 +31,33 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 # Mapping is [actions schema, primary trait, optional features]
-# optional is SUPPORT_* = (trait, command)
+# optional is dict of SUPPORT_ATTR: TRAIT
 MAPPING_COMPONENT = {
-    group.DOMAIN: [TYPE_SCENE, TRAIT_SCENE, None],
-    scene.DOMAIN: [TYPE_SCENE, TRAIT_SCENE, None],
-    script.DOMAIN: [TYPE_SCENE, TRAIT_SCENE, None],
-    switch.DOMAIN: [TYPE_SWITCH, TRAIT_ONOFF, None],
-    fan.DOMAIN: [TYPE_SWITCH, TRAIT_ONOFF, None],
-    lock.DOMAIN: [TYPE_SWITCH, TRAIT_ONOFF, None],
-    input_boolean.DOMAIN: [TYPE_SWITCH, TRAIT_ONOFF, None],
-    light.DOMAIN: [
+    group.DOMAIN: (TYPE_SCENE, TRAIT_SCENE, None),
+    scene.DOMAIN: (TYPE_SCENE, TRAIT_SCENE, None),
+    script.DOMAIN: (TYPE_SCENE, TRAIT_SCENE, None),
+    switch.DOMAIN: (TYPE_SWITCH, TRAIT_ONOFF, None),
+    fan.DOMAIN: (TYPE_SWITCH, TRAIT_ONOFF, None),
+    lock.DOMAIN: (TYPE_SWITCH, TRAIT_ONOFF, None),
+    input_boolean.DOMAIN: (TYPE_SWITCH, TRAIT_ONOFF, None),
+    light.DOMAIN: (
         TYPE_LIGHT, TRAIT_ONOFF, {
             light.SUPPORT_BRIGHTNESS: TRAIT_BRIGHTNESS,
             light.SUPPORT_RGB_COLOR: TRAIT_RGB_COLOR,
             light.SUPPORT_COLOR_TEMP: TRAIT_COLOR_TEMP,
         }
-    ],
-    cover.DOMAIN: [
+    ),
+    cover.DOMAIN: (
         TYPE_LIGHT, TRAIT_ONOFF, {
             cover.SUPPORT_SET_POSITION: TRAIT_BRIGHTNESS
         }
-    ],
-    media_player.DOMAIN: [
+    ),
+    media_player.DOMAIN: (
         TYPE_LIGHT, TRAIT_ONOFF, {
             media_player.SUPPORT_VOLUME_SET: TRAIT_BRIGHTNESS
         }
-    ],
-}  # type: Dict[str, list]
+    ),
+}  # type: Dict[str, Tuple[str, str, Dict[str, str]]]
 
 
 def make_actions_response(request_id: str, payload: dict) -> dict:
