@@ -1,23 +1,68 @@
 """Tests for the Google Assistant integration."""
 
 DEMO_DEVICES = [{
-    'id':
-    'light.kitchen_lights',
+    'id': 'switch.decorative_lights',
     'name': {
-        'name': 'Kitchen Lights'
+        'name': 'Decorative Lights'
     },
-    'traits': [
-        'action.devices.traits.OnOff', 'action.devices.traits.Brightness',
-        'action.devices.traits.ColorSpectrum',
-        'action.devices.traits.ColorTemperature'
-    ],
-    'type':
-    'action.devices.types.LIGHT',
-    'willReportState':
-    False
+    'traits': ['action.devices.traits.OnOff'],
+    'type': 'action.devices.types.SWITCH',
+    'willReportState': False
+}, {
+    'id': 'switch.ac',
+    'name': {
+        'name': 'AC'
+    },
+    'traits': ['action.devices.traits.OnOff'],
+    'type': 'action.devices.types.SWITCH',
+    'willReportState': False
+}, {
+    'id': 'group.all_switches',
+    'name': {
+        'name': 'all switches'
+    },
+    'traits': ['action.devices.traits.Scene'],
+    'type': 'action.devices.types.SCENE',
+    'willReportState': False
+}, {
+    'id': 'fan.ceiling_fan',
+    'name': {
+        'name': 'Ceiling Fan'
+    },
+    'traits': ['action.devices.traits.OnOff'],
+    'type': 'action.devices.types.SWITCH',
+    'willReportState': False
+}, {
+    'id': 'fan.living_room_fan',
+    'name': {
+        'name': 'Living Room Fan'
+    },
+    'traits': ['action.devices.traits.OnOff'],
+    'type': 'action.devices.types.SWITCH',
+    'willReportState': False
+}, {
+    'id': 'group.all_fans',
+    'name': {
+        'name': 'all fans'
+    },
+    'traits': ['action.devices.traits.Scene'],
+    'type': 'action.devices.types.SCENE',
+    'willReportState': False
+}, {
+    'id': 'group.all_locks',
+    'name': {
+        'name': 'all locks'
+    },
+    'traits': ['action.devices.traits.Scene'],
+    'type': 'action.devices.types.SCENE',
+    'willReportState': False
 }, {
     'id':
     'light.ceiling_lights',
+    'type':
+    'action.devices.types.LIGHT',
+    'willReportState':
+    False,
     'name': {
         'name': 'Roof Lights',
         'nicknames': ['top lights', 'ceiling lights']
@@ -27,15 +72,26 @@ DEMO_DEVICES = [{
         'action.devices.traits.ColorSpectrum',
         'action.devices.traits.ColorTemperature'
     ],
+}, {
+    'id':
+    'light.bed_light',
+    'name': {
+        'name': 'Bed Light'
+    },
+    'traits': [
+        'action.devices.traits.OnOff', 'action.devices.traits.Brightness',
+        'action.devices.traits.ColorSpectrum',
+        'action.devices.traits.ColorTemperature'
+    ],
     'type':
     'action.devices.types.LIGHT',
     'willReportState':
     False
 }, {
     'id':
-    'light.bed_light',
+    'light.kitchen_lights',
     'name': {
-        'name': 'Bed Light'
+        'name': 'Kitchen Lights'
     },
     'traits': [
         'action.devices.traits.OnOff', 'action.devices.traits.Brightness',
@@ -103,6 +159,26 @@ DEMO_DEVICES = [{
     'type': 'action.devices.types.SCENE',
     'willReportState': False
 }, {
+    'id': 'media_player.lounge_room',
+    'name': {
+        'name': 'Lounge room'
+    },
+    'traits': ['action.devices.traits.OnOff'],
+    'type': 'action.devices.types.LIGHT',
+    'willReportState': False
+}, {
+    'id':
+    'media_player.walkman',
+    'name': {
+        'name': 'Walkman'
+    },
+    'traits':
+    ['action.devices.traits.OnOff', 'action.devices.traits.Brightness'],
+    'type':
+    'action.devices.types.LIGHT',
+    'willReportState':
+    False
+}, {
     'id':
     'media_player.bedroom',
     'name': {
@@ -127,47 +203,27 @@ DEMO_DEVICES = [{
     'willReportState':
     False
 }, {
-    'id': 'media_player.lounge_room',
+    'id': 'script.test',
     'name': {
-        'name': 'Lounge room'
-    },
-    'traits': ['action.devices.traits.OnOff'],
-    'type': 'action.devices.types.LIGHT',
-    'willReportState': False
-}, {
-    'id':
-    'media_player.walkman',
-    'name': {
-        'name': 'Walkman'
-    },
-    'traits':
-    ['action.devices.traits.OnOff', 'action.devices.traits.Brightness'],
-    'type':
-    'action.devices.types.LIGHT',
-    'willReportState':
-    False
-}, {
-    'id': 'fan.living_room_fan',
-    'name': {
-        'name': 'Living Room Fan'
-    },
-    'traits': ['action.devices.traits.OnOff'],
-    'type': 'action.devices.types.SWITCH',
-    'willReportState': False
-}, {
-    'id': 'fan.ceiling_fan',
-    'name': {
-        'name': 'Ceiling Fan'
-    },
-    'traits': ['action.devices.traits.OnOff'],
-    'type': 'action.devices.types.SWITCH',
-    'willReportState': False
-}, {
-    'id': 'group.all_fans',
-    'name': {
-        'name': 'all fans'
+        'name': 'test'
     },
     'traits': ['action.devices.traits.Scene'],
     'type': 'action.devices.types.SCENE',
+    'willReportState': False
+}, {
+    'id': 'group.all_scripts',
+    'name': {
+        'name': 'all scripts'
+    },
+    'traits': ['action.devices.traits.Scene'],
+    'type': 'action.devices.types.SCENE',
+    'willReportState': False
+}, {
+    'id': 'input_boolean.test',
+    'name': {
+        'name': 'test boolean'
+    },
+    'traits': ['action.devices.traits.OnOff'],
+    'type': 'action.devices.types.SWITCH',
     'willReportState': False
 }]

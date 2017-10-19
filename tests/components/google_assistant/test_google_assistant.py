@@ -6,9 +6,10 @@ import pytest
 
 from homeassistant import setup, const, core
 from homeassistant.components import (
-    http, async_setup, light, cover, media_player, fan
+    http, async_setup, script, input_boolean
 )
 from homeassistant.components import google_assistant as ga
+from homeassistant.core import HomeAssistant  # NOQA
 from tests.common import get_test_instance_port
 
 from . import DEMO_DEVICES
@@ -30,6 +31,9 @@ AUTHCFG = {
 }
 AUTH_HEADER = {'Authorization': 'Bearer {}'.format(AUTHCFG['access_token'])}
 
+# domains without demo platforms
+NO_DEMO_PLATFORM = ['group', 'script', 'input_boolean']
+
 
 @pytest.fixture
 def assistant_client(loop, hass_fixture, test_client):
@@ -44,7 +48,7 @@ def assistant_client(loop, hass_fixture, test_client):
 
 
 @pytest.fixture
-def hass_fixture(loop, hass):
+def hass_fixture(loop, hass: HomeAssistant):
     """Setup a hass instance for these tests."""
     # We need to do this to get access to homeassistant/turn_(on,off)
     loop.run_until_complete(async_setup(hass, {core.DOMAIN: {}}))
@@ -56,32 +60,43 @@ def hass_fixture(loop, hass):
             }
         }))
 
-    loop.run_until_complete(
-        setup.async_setup_component(hass, light.DOMAIN, {
-            'light': [{
-                'platform': 'demo'
-            }]
-        }))
-    loop.run_until_complete(
-        setup.async_setup_component(hass, cover.DOMAIN, {
-            'cover': [{
-                'platform': 'demo'
-            }],
-        }))
+    for domain in ga.smart_home.MAPPING_COMPONENT.keys():
+        # ignore domains that don't have demo platforms
+        if domain in NO_DEMO_PLATFORM:
+            continue
+
+        loop.run_until_complete(
+            setup.async_setup_component(hass, domain, {
+                domain: [{
+                    'platform': 'demo'
+                }]
+            }))
 
     loop.run_until_complete(
-        setup.async_setup_component(hass, media_player.DOMAIN, {
-            'media_player': [{
-                'platform': 'demo'
-            }]
-        }))
+        setup.async_setup_component(hass, script.DOMAIN, {
+            'script': {
+                'test': {
+                    'sequence': [{
+                        'delay': {
+                            'seconds': 5
+                        }
+                    }, {
+                        'event': 'test_event',
+                    }]
+                }
+            }
+        })
+    )
 
     loop.run_until_complete(
-        setup.async_setup_component(hass, fan.DOMAIN, {
-            'fan': [{
-                'platform': 'demo'
-            }]
-        }))
+        setup.async_setup_component(hass, input_boolean.DOMAIN, {
+            'input_boolean': {
+                'test': {
+                    'name': 'test boolean'
+                }
+            }
+        })
+    )
 
     # Kitchen light is explicitly excluded from being exposed
     ceiling_lights_entity = hass.states.get('light.ceiling_lights')
@@ -92,6 +107,16 @@ def hass_fixture(loop, hass):
         ceiling_lights_entity.entity_id,
         ceiling_lights_entity.state,
         attributes=attrs)
+
+    for domain in ['script', 'input_boolean']:
+        # expose for testing
+        ent = hass.states.get('{}.test'.format(domain))
+        ent_attrs = dict(ent.attributes)
+        ent_attrs[ga.const.ATTR_GOOGLE_ASSISTANT] = True
+        hass.states.async_set(
+            ent.entity_id,
+            ent.state,
+            attributes=ent_attrs)
 
     return hass
 
@@ -126,7 +151,6 @@ def test_sync_request(hass_fixture, assistant_client):
     body = yield from result.json()
     assert body.get('requestId') == reqid
     devices = body['payload']['devices']
-    # assert len(devices) == 4
     assert len(devices) == len(DEMO_DEVICES)
     # HACK this is kind of slow and lazy
     for dev in devices:
