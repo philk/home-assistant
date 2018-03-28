@@ -27,15 +27,6 @@ SERVICE_SET_USERCODE = 'set_usercode'
 SERVICE_GET_USERCODE = 'get_usercode'
 SERVICE_CLEAR_USERCODE = 'clear_usercode'
 
-POLYCONTROL = 0x10E
-DANALOCK_V2_BTZE = 0x2
-POLYCONTROL_DANALOCK_V2_BTZE_LOCK = (POLYCONTROL, DANALOCK_V2_BTZE)
-WORKAROUND_V2BTZE = 'v2btze'
-
-DEVICE_MAPPINGS = {
-    POLYCONTROL_DANALOCK_V2_BTZE_LOCK: WORKAROUND_V2BTZE
-}
-
 LOCK_NOTIFICATION = {
     '1': 'Manual Lock',
     '2': 'Manual Unlock',
@@ -206,7 +197,6 @@ class ZwaveLock(zwave.ZWaveDeviceEntity, LockDevice):
         self._state = None
         self._notification = None
         self._lock_status = None
-        self._v2btze = None
 
         # Enable appropriate workaround flags for our device
         # Make sure that we have values for the key before converting to int
@@ -214,11 +204,6 @@ class ZwaveLock(zwave.ZWaveDeviceEntity, LockDevice):
                 self.node.product_id.strip()):
             specific_sensor_key = (int(self.node.manufacturer_id, 16),
                                    int(self.node.product_id, 16))
-            if specific_sensor_key in DEVICE_MAPPINGS:
-                if DEVICE_MAPPINGS[specific_sensor_key] == WORKAROUND_V2BTZE:
-                    self._v2btze = 1
-                    _LOGGER.debug("Polycontrol Danalock v2 BTZE "
-                                  "workaround enabled")
         self.update_properties()
 
     def update_properties(self):
@@ -228,14 +213,6 @@ class ZwaveLock(zwave.ZWaveDeviceEntity, LockDevice):
         if self.values.access_control:
             notification_data = self.values.access_control.data
             self._notification = LOCK_NOTIFICATION.get(str(notification_data))
-
-            if self._v2btze:
-                if self.values.v2btze_advanced and \
-                        self.values.v2btze_advanced.data == CONFIG_ADVANCED:
-                    self._state = LOCK_STATUS.get(str(notification_data))
-                    _LOGGER.debug(
-                        "Lock state set from Access Control value and is %s, "
-                        "get=%s", str(notification_data), self.state)
 
         if not self.values.alarm_type:
             return
@@ -250,6 +227,13 @@ class ZwaveLock(zwave.ZWaveDeviceEntity, LockDevice):
 
         if not alarm_type:
             return
+
+        state = LOCK_STATUS.get(str(alarm_type), None)
+        if state is not None:
+            _LOGGER.debug(
+                "Setting state based on alarm %d: %s", alarm_type, state)
+            self._state = state
+
         if alarm_type == 21:
             self._lock_status = '{}{}'.format(
                 LOCK_ALARM_TYPE.get(str(alarm_type)),
